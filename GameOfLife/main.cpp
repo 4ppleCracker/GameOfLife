@@ -4,14 +4,17 @@
 #include <ctime>
 
 using namespace std; using namespace sf;
-
-RenderWindow window(VideoMode(600, 600), "Game Of Life");
+int WindowHeight = 1000;
+int WindowLength = 1000;
+RenderWindow window(VideoMode(WindowHeight, WindowLength), "Game Of Life");
 int GridHeight = 100;
 int GridLength = 100;
 vector<vector<int>> grid(GridHeight, vector<int>(GridLength, 0));
 gGraphics graphics(window);
 int framerate = 30;
 
+int RenderHeight = WindowHeight / GridHeight;
+int RenderLength = WindowLength / GridLength;
 
 int GridAround(int row, int column) {
 	int tmp = 0;
@@ -58,10 +61,10 @@ void gGraphics::WindowRender() {
 			if (amount > 3)  toset = 0;
 			grid[i][k] = toset;
 			if (i == 1 && k == 1) cout << "Rendering!" << endl;
-			RectangleShape* square = new RectangleShape(Vector2f(4, 4));
-			square->setPosition(i * 6, k * 6);
-			square->setFillColor(toset ? Color::White : Color::Black);
-			window.draw(*square);
+			RectangleShape square = RectangleShape(Vector2f(RenderHeight - 2, RenderLength - 2));
+			square.setPosition(i * RenderHeight, k * RenderLength);
+			square.setFillColor(toset ? Color::White : Color::Black);
+			window.draw(square);
 		}
 	}
 }
