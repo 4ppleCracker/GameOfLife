@@ -4,15 +4,14 @@
 #include <ctime>
 
 using namespace std; using namespace sf;
-int WindowHeight = 1000;
-int WindowLength = 1000;
+int WindowHeight = 800;
+int WindowLength = 800;
 RenderWindow window(VideoMode(WindowHeight, WindowLength), "Game Of Life");
 int GridHeight = 100;
 int GridLength = 100;
-vector<vector<int>> grid(GridHeight, vector<int>(GridLength, 0));
+vector<vector<int>> grid;
 gGraphics graphics(window);
 int framerate = 30;
-
 int RenderHeight = WindowHeight / GridHeight;
 int RenderLength = WindowLength / GridLength;
 
@@ -36,6 +35,7 @@ int GridAround(int row, int column) {
 
 
 int main() {
+	grid = vector<vector<int>>(GridHeight, vector<int>(GridLength, 0));
 	window.setFramerateLimit(framerate);
 	srand(time(0) * 0.99382);
 	for (int i = 0; i < grid.size(); i++) {
@@ -46,21 +46,17 @@ int main() {
 	while (window.isOpen()) {
 		graphics.Render();
 	}
-	cin.get();
 	return 0;
 }
 
 void gGraphics::WindowRender() {
 	for (int i = 0; i < grid.size(); i++) {
 		for (int k = 0; k < grid[0].size(); k++) {
-			if (i == 1 && k == 1) cout << "Logic!" << endl;
 			int amount = GridAround(i, k);
 			int toset = grid[i][k];
-			if (amount < 2) toset = 0;
+			if (amount < 2 || amount > 3) toset = 0;
 			if (amount == 3) toset = 1;
-			if (amount > 3)  toset = 0;
 			grid[i][k] = toset;
-			if (i == 1 && k == 1) cout << "Rendering!" << endl;
 			RectangleShape square = RectangleShape(Vector2f(RenderHeight - 2, RenderLength - 2));
 			square.setPosition(i * RenderHeight, k * RenderLength);
 			square.setFillColor(toset ? Color::White : Color::Black);
@@ -70,17 +66,19 @@ void gGraphics::WindowRender() {
 }
 
 void gGraphics::Poll(Event e) {
-	if (e.key.code == Keyboard::Up) {
-		framerate += 1;
-		window.setFramerateLimit(framerate);
-		cout << framerate << endl;
-	}
-	if (e.key.code == Keyboard::Down) {
-		framerate -= 1;
-		window.setFramerateLimit(framerate);
-		cout << framerate << endl;
-	}
-
+		if (e.key.code == Keyboard::Up) {
+			framerate += 1;
+			window.setFramerateLimit(framerate);
+			cout << framerate << endl;
+		}
+		if (e.key.code == Keyboard::Down) {
+			framerate -= 1;
+			window.setFramerateLimit(framerate);
+			cout << framerate << endl;
+		}
+		if (e.type == Event::Closed) {
+			window.close();
+		}
 }
 
 
