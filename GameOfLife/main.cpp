@@ -11,9 +11,13 @@ int GridHeight = 100;
 int GridLength = 100;
 vector<vector<int>> grid;
 gGraphics graphics(window);
-int framerate = 30;
+int framerate = 15;
+int fps = 0;
+int t = time(0);
 int RenderHeight = WindowHeight / GridHeight;
 int RenderLength = WindowLength / GridLength;
+
+RectangleShape square;
 
 int GridAround(int row, int column) {
 	int tmp = 0;
@@ -21,8 +25,8 @@ int GridAround(int row, int column) {
 	int oldc = column;
 	if (row != 0) row--;
 	if (column != 0) column--;
-	for (int i = 0; i < (oldr == 0 || oldr== grid.size()-1 ? 2 : 3); i++) {
-		for (int k = 0; k < (oldc == 0 || oldc == grid[0].size()-1 ? 2 : 3); k++) {
+	for (int i = 0; i < (oldr == 0 || oldr == GridHeight - 1 ? 2 : 3); i++) {
+		for (int k = 0; k < (oldc == 0 || oldc == GridLength - 1 ? 2 : 3); k++) {
 			if (!(row + i == (oldr) && column + k == (oldc))) {
 				if (grid[row + i][column + k] == 1) {
 					tmp++;
@@ -36,6 +40,7 @@ int GridAround(int row, int column) {
 
 int main() {
 	grid = vector<vector<int>>(GridHeight, vector<int>(GridLength, 0));
+	square = RectangleShape(Vector2f(RenderHeight - 2, RenderLength - 2));
 	window.setFramerateLimit(framerate);
 	srand(time(0) * 0.99382);
 	for (int i = 0; i < grid.size(); i++) {
@@ -43,6 +48,7 @@ int main() {
 			grid[i][k] = rand() % 10 == 1 ? 1 : 0;
 		}
 	}
+	t = time(0);
 	while (window.isOpen()) {
 		graphics.Render();
 	}
@@ -50,17 +56,25 @@ int main() {
 }
 
 void gGraphics::WindowRender() {
+	if (time(0) == t) fps++;
+	else {
+		cout << fps << endl;
+		t = time(0);
+		fps = 0;
+	}
 	for (int i = 0; i < grid.size(); i++) {
 		for (int k = 0; k < grid[0].size(); k++) {
 			int amount = GridAround(i, k);
 			int toset = grid[i][k];
-			if (amount < 2 || amount > 3) toset = 0;
+			if (amount < 2 || amount > 3 || (rand() % 12) == 1) toset = 0;
 			if (amount == 3) toset = 1;
 			grid[i][k] = toset;
-			RectangleShape square = RectangleShape(Vector2f(RenderHeight - 2, RenderLength - 2));
-			square.setPosition(i * RenderHeight, k * RenderLength);
-			square.setFillColor(toset ? Color::White : Color::Black);
-			window.draw(square);
+			if (toset == 1) {
+				
+				square.setPosition(i * RenderHeight, k * RenderLength);
+				square.setFillColor(Color::White);
+				window.draw(square);
+			}
 		}
 	}
 }
