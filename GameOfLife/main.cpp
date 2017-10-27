@@ -11,7 +11,7 @@ int GridHeight = 100;
 int GridLength = 100;
 vector<vector<int>> grid;
 gGraphics graphics(window);
-int framerate = 15;
+int framerate = 30;
 int fps = 0;
 int t = time(0);
 int RenderHeight = WindowHeight / GridHeight;
@@ -62,15 +62,15 @@ void gGraphics::WindowRender() {
 		t = time(0);
 		fps = 0;
 	}
-	for (int i = 0; i < grid.size(); i++) {
-		for (int k = 0; k < grid[0].size(); k++) {
+	int t = time(0);
+	for (int i = 0; i < GridHeight; i++) {
+		for (int k = 0; k < GridLength; k++) {
 			int amount = GridAround(i, k);
 			int toset = grid[i][k];
 			if (amount < 2 || amount > 3 || (rand() % 12) == 1) toset = 0;
 			if (amount == 3) toset = 1;
 			grid[i][k] = toset;
 			if (toset == 1) {
-				
 				square.setPosition(i * RenderHeight, k * RenderLength);
 				square.setFillColor(Color::White);
 				window.draw(square);
